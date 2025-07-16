@@ -11,47 +11,47 @@ import java.util.*;
 @Entity
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email"),
-        @UniqueConstraint(columnNames = "mobilenumber")
+        @UniqueConstraint(columnNames = "mobileNumber")
 })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Name is required")
-    @Size(min = 2, max = 50, message = "Name must be between 2 to 50 characters")
-    @Column(nullable = false)
+    @NotBlank @Size(min = 2, max = 50)
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, max = 100, message = "Password must be 8 to 100 characters")
+    @NotBlank @Size(min = 8, max = 100)
     @Column(nullable = false)
-    private String password; // Will be hashed
+    private String password;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
-    @Column(unique = true, nullable = false)
+    @NotBlank @Email
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @NotBlank(message = "Mobile number is required")
-    @Pattern(regexp = "^[6-9]\\d{9}$", message = "Mobile number must be valid")
-    @Column(nullable = false, unique = true)
-    private String mobilenumber;
+    @NotBlank @Pattern(regexp = "^[6-9]\\d{9}$")
+    @Column(name = "mobile_number", nullable = false, unique = true)  // Explicit column mapping
+    private String mobileNumber;
 
     // Marketplace relationships
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Listing> listings = new ArrayList<>();
 
-    // Rental relationships
+    // Rental relationships (as car owner)
     @OneToMany(mappedBy = "carOwner", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Rental> ownedRentals = new ArrayList<>();
+
+    // Rental relationships (as renter)
+    @OneToMany(mappedBy = "renter", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Rental> rentedCars = new ArrayList<>();
 
     // Roles
     @ManyToMany(fetch = FetchType.EAGER)
@@ -73,10 +73,20 @@ public class User {
     @Builder.Default
     private Set<Listing> wishlistedItems = new HashSet<>();
 
-    // Timestamps
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    // Helper methods
+    public void addToWishlist(Listing listing) {
+        this.wishlistedItems.add(listing);
+        listing.getInterestedUsers().add(this);
+    }
+
+    public void removeFromWishlist(Listing listing) {
+        this.wishlistedItems.remove(listing);
+        listing.getInterestedUsers().remove(this);
+    }
 }

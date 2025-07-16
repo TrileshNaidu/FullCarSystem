@@ -2,9 +2,19 @@ package com.example.FullCarSystem.Modules.model;
 
 
 public enum RoleType {
+    ROLE_ADMIN("System Administrator"),
+    ROLE_RENTER("Car Renter"),
+    ROLE_SELLER("Vehicle Seller"),
+    ROLE_BUYER("Vehicle Buyer"),
+    ROLE_USER("Basic User");  // Added a default role
 
-    ROLE_ADMIN,
-    ROLE_RENTER,
-    ROLE_SELLER,
-    ROLE_BUYER
+    private final String displayName;
+
+    RoleType(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
 }

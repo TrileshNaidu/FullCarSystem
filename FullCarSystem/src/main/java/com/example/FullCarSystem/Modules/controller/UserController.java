@@ -1,30 +1,27 @@
 package com.example.FullCarSystem.Modules.controller;
 
-import com.example.FullCarSystem.Modules.model.User; // ✅ Correct
-
-import com.example.FullCarSystem.Service.userService;
+import com.example.FullCarSystem.DTO.SignupRequest;
+import com.example.FullCarSystem.Modules.model.Rental;
+import com.example.FullCarSystem.Modules.model.User;
+import com.example.FullCarSystem.Service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
-
-    private final userService userService;
-
-    public UserController(userService userService){
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUsers(@RequestBody User users){
-        return ResponseEntity.ok(userService.createUser(users));
+    public ResponseEntity<User> createUser(@RequestBody SignupRequest signupRequest) {
+        return ResponseEntity.ok(userService.createUser(signupRequest));
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers(){
+    public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
@@ -35,13 +32,18 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/rentals")
+    public ResponseEntity<List<Rental>> getUserRentals(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserRentals(id));
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user){
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         return ResponseEntity.ok(userService.updateUser(id, user));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
