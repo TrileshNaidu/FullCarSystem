@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/FullCarSystem.iml" filepath="$PROJECT_DIR$/.idea/FullCarSystem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FullCarSystem/FullCarSystem.iml" filepath="$PROJECT_DIR$/FullCarSystem/FullCarSystem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/FullCarSystemCA.iml" filepath="$PROJECT_DIR$/.idea/FullCarSystemCA.iml" />
     </modules>
   </component>
 </project>

@@ -13,6 +13,7 @@ import java.util.*;
         @UniqueConstraint(columnNames = "email"),
         @UniqueConstraint(columnNames = "mobileNumber")
 })
+//done
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,11 +38,6 @@ public class User {
     @NotBlank @Pattern(regexp = "^[6-9]\\d{9}$")
     @Column(name = "mobile_number", nullable = false, unique = true)  // Explicit column mapping
     private String mobileNumber;
-
-    // Marketplace relationships
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Listing> listings = new ArrayList<>();
 
     // Rental relationships (as car owner)
     @OneToMany(mappedBy = "carOwner", cascade = CascadeType.ALL)
@@ -73,20 +69,26 @@ public class User {
     @Builder.Default
     private Set<Listing> wishlistedItems = new HashSet<>();
 
+    @ElementCollection
+    @CollectionTable(name = "user_seller_ratings", joinColumns = @JoinColumn(name = "user_id"))
+    private List<Rating> sellerRatings = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "user_buyer_ratings", joinColumns = @JoinColumn(name = "user_id"))
+    private List<Rating> buyerRatings = new ArrayList<>();
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Helper methods
-    public void addToWishlist(Listing listing) {
-        this.wishlistedItems.add(listing);
-        listing.getInterestedUsers().add(this);
+    public String getMainRoleName() {
+        return roles.stream()
+            .map(role -> role.getName().name())
+            .findFirst()
+            .orElse("ROLE_USER");
     }
 
-    public void removeFromWishlist(Listing listing) {
-        this.wishlistedItems.remove(listing);
-        listing.getInterestedUsers().remove(this);
-    }
+
 }
